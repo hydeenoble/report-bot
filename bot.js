@@ -1,7 +1,6 @@
 require('dotenv').config();
-const serviceLocator = require('./config/di');
 
-const logger = serviceLocator.get('logger');
+const serviceLocator = require('./config/di');
 
 const bot = serviceLocator.get('bot');
 const botController = serviceLocator.get('botController');
@@ -12,17 +11,11 @@ bot.on('message', (messagePayload) => {
     }
     botController.routeMessage(messagePayload)
 });
-// const bot_token = config.slack_auth.token;
 
 // const bot = new SlackBot({
 //     token: bot_token,
 //     name: 'reportbot'
 // });
-
-// bot.on('start', () => {
-//     bot.postMessageToUser('iemehinola', 'Its working', params);
-// });
-
 
 // bot.on('message', (messagePayload) => {
 //     if(messagePayload.type !== 'message'){
