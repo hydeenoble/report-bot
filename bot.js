@@ -1,41 +1,44 @@
 require('dotenv').config();
-const config = require('./config/config');
-const bot_token = config.slack_auth.token;
+const serviceLocator = require('./config/di');
 
-const SlackBot = require('slackbots');
+const logger = serviceLocator.get('logger');
 
-const bot = new SlackBot({
-    token: bot_token,
-    name: 'reportbot'
-});
+const bot = serviceLocator.get('bot');
+const botController = serviceLocator.get('botController');
 
-bot.on('start', () => {
-    const params = {
-        icon_emoji: ':smiley:'
-    }
-
-    bot.postMessageToUser('iemehinola', 'Its working', params);
-
-    // bot.getUser('iemehinola')
-    // .then((res) => {
-    //     console.log(res);
-    // })
-    // .catch((error) => console.error(error));
-});
-
-bot.on('error', (err) => console.log(err))
-
-bot.on('message', (data) => {
-    if(data.type !== 'message'){
+bot.on('message', (messagePayload) => {
+    if(messagePayload.type !== 'message'){
         return;
     }
-    handleMessage(data);
+    botController.routeMessage(messagePayload)
 });
+// const bot_token = config.slack_auth.token;
+
+// const bot = new SlackBot({
+//     token: bot_token,
+//     name: 'reportbot'
+// });
+
+// bot.on('start', () => {
+//     bot.postMessageToUser('iemehinola', 'Its working', params);
+// });
 
 
-function handleMessage(data){
-    console.log(data);
-    if(data.text === 'help'){
-        bot.postMessage(data.channel, 'how may i help?');
-    }
-}
+// bot.on('message', (messagePayload) => {
+//     if(messagePayload.type !== 'message'){
+//         return;
+//     }
+//     botController.routeMessage(messagePayload)
+// });
+
+
+// function handleMessage(data){    
+//     if(data.user && data.text === 'help'){
+//         bot.getUserById(data.user)
+//         .then((res) => {
+//             bot.postMessage(data.channel, 
+//                 `${res.real_name}, Here are some \`tips\`:`);
+//         })
+//     }
+// }
+

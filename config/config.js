@@ -1,6 +1,6 @@
 const config = {
     slack_auth: {
-        token: process.env.TOKEN
+        token: process.env.TOKEN,
     }
 }
 
