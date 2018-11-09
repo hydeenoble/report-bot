@@ -26,7 +26,7 @@ class BotController {
         .then((res) => {
             this.bot.postMessage(messagePayload.channel, 
                 `${res.real_name}, here are some tips: \n
-                - \`start\` wakes me up to begina reporting session
+                - \`start\` wakes me up to begin a reporting session
                 `);
         });
     }
