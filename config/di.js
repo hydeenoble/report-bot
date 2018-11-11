@@ -10,7 +10,7 @@ const SlackBot = require('slackbots');
 const config = require('../config/config');
 const serviceLocator = require('../lib/serviceLocator');
 const BotController = require('../controller/bot');
-
+const botService = require('../service/bot')
 /**
 * Returns an instance of logger for the App
 */
@@ -48,15 +48,19 @@ serviceLocator.register('bot', (servicelocator) => {
 
     bot.on('error', (err) => logger.error(err));
 
-    bot.
     return bot;
+});
+
+serviceLocator.register('botService', (servicelocator) => {
+    const logger = servicelocator.get('logger');
+    return new botService(logger);
 });
 
 serviceLocator.register('botController', (servicelocator) => {
     const logger = servicelocator.get('logger');
     const bot = servicelocator.get('bot');
-    return new BotController(logger, bot);
+    const botService = servicelocator.get('botService');
+    return new BotController(logger, bot, botService);
 });
-
 
 module.exports = serviceLocator;
