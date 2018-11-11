@@ -16,8 +16,6 @@ class BotController {
                 default:
                 this.sendDefaultMessage(messagePayload);
             }
-        }else{
-
         }
     }
 
