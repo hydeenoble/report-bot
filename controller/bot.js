@@ -11,8 +11,8 @@ class BotController {
         if(messagePayload.user){
             let messagePayloadArray = messagePayload.text.split(' ');
 
-            let firstSubText = messagePayloadArray[0].trim();
-            let secondSubText = messagePayloadArray[1].trim();
+            const firstSubText = messagePayloadArray[0].trim();
+            const secondSubText = (messagePayloadArray[1]) ? messagePayloadArray[1].trim() : '';
 
             let regex = RegExp("^(<@)[A-Z0-9]*>$");
 
@@ -57,7 +57,15 @@ class BotController {
         .then((res) => {
             this.bot.postMessage(messagePayload.channel, 
                 `${res.real_name}, here are some tips:
-                - \`start\` wakes me up to begin a reporting session
+    • \`start\` - starts a snippet reporting session
+    • \`done\` - adds an accomplishment for the current week (ending Friday)
+    • \`next\` - adds an objective for next week (starting Monday)
+    • \`in-progress\` - adds on work in process for the current week
+    • \`block\` - adds a note about something standing in your way
+    • \`current\` - shows your report for the current week
+    • \`save\` - tell @reportbot your report for the week is complete
+    • \`show @username #\` - displays most recent snippets for @username, optional # of weeks
+    • \`show #channelname #\` - displays the most recent published snippets for everyone in a channel, optional # of weeks
                 `);
         });
     }
