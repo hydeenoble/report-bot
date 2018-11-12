@@ -1,6 +1,11 @@
+const taskModel = require('../models/task');
+
 class BotService{
 
-    constructor(){}
+    constructor(logger, mongo){
+        this.logger = logger;
+        this.mongo = mongo;
+    }
 
     start(messagePayload){
         // @TODO: logic for 'start' command;

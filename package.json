@@ -12,10 +12,14 @@
   "author": "EMEHINOLA Idowu <hydeenoble39@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "@slack/client": "^4.8.0",
+    "@slack/client": "4.8.0",
+    "bluebird": "3.5.3",
     "dotenv": "6.1.0",
-    "slackbots": "1.2.0",
+    "mongoose": "5.3.11",
+    "mongoose-string-query": "0.2.5",
+    "mongoose-timestamp": "0.6.0",
     "morgan": "1.9.1",
+    "slackbots": "1.2.0",
     "winston": "2.4.1"
   }
 }
