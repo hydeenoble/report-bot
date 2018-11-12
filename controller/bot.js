@@ -13,6 +13,7 @@ class BotController {
             
             switch(command){
                 case 'help':
+                    console.log('case is help');
                     this.sendHelpMessage(messagePayload);
                 break;
                 case 'start':
