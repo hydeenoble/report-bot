@@ -9,7 +9,14 @@ class BotController {
     routeMessage(messagePayload){
 
         if(messagePayload.user){
-            const command = messagePayload.text.split(' ')[0].trim();
+            let messagePayloadArray = messagePayload.text.split(' ');
+
+            let firstSubText = messagePayloadArray[0].trim();
+            let secondSubText = messagePayloadArray[1].trim();
+
+            let regex = RegExp("^(<@)[A-Z0-9]*>$");
+
+            const command = (regex.test(firstSubText)) ? secondSubText : firstSubText;
             
             switch(command){
                 case 'help':
@@ -49,7 +56,7 @@ class BotController {
         this.bot.getUserById(messagePayload.user)
         .then((res) => {
             this.bot.postMessage(messagePayload.channel, 
-                `${res.real_name}, here are some tips: \n
+                `${res.real_name}, here are some tips:
                 - \`start\` wakes me up to begin a reporting session
                 `);
         });
