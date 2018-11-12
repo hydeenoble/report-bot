@@ -6,11 +6,15 @@
 const winston = require('winston');
 const morgan = require('morgan');
 const SlackBot = require('slackbots');
+const mongoose = require('mongoose');
+const bluebird = require('bluebird');
+mongoose.Promise = bluebird;
 
 const config = require('../config/config');
 const serviceLocator = require('../lib/serviceLocator');
 const BotController = require('../controller/bot');
-const botService = require('../service/bot')
+const botService = require('../service/bot');
+
 /**
 * Returns an instance of logger for the App
 */
@@ -51,9 +55,46 @@ serviceLocator.register('bot', (servicelocator) => {
     return bot;
 });
 
+
+/**
+ * Returns a Mongo connection instance.
+ */
+serviceLocator.register('mongo', (serviceLocator) => {
+    const logger = serviceLocator.get('logger');
+    const connectionString = (!config.mongo.connection.username || !config.mongo.connection.password) ?
+      `mongodb://${config.mongo.connection.host}:${config.mongo.connection.port}/${config.mongo.connection.db}` :
+      `mongodb://${config.mongo.connection.username}:${config.mongo.connection.password}@${config.mongo.connection.host}:${config.mongo.connection.port}/${config.mongo.connection.db}`;
+  
+    mongoose.connect(connectionString);
+    const db = mongoose.connection;
+  
+    db.on('connected', () => {
+      logger.info('Mongo Connection Established');
+    });
+    db.on('error', (err) => {
+      logger.error(`Mongo Connection Error : ${err}`);
+      process.exit(1);
+    });
+    db.on('disconnected', () => {
+      logger.error('Mongo Connection disconnected');
+      process.exit(1);
+    });
+  
+    // If the Node process ends, close the Mongoose connection
+    process.on('SIGINT', () => {
+      db.close(() => {
+        logger.error('Mongoose default connection disconnected through app termination');
+        process.exit(0);
+      });
+    });
+  
+    return db;
+  });
+
 serviceLocator.register('botService', (servicelocator) => {
     const logger = servicelocator.get('logger');
-    return new botService(logger);
+    const mongo = servicelocator.get('mongo');
+    return new botService(logger, mongo);
 });
 
 serviceLocator.register('botController', (servicelocator) => {
