@@ -47,9 +47,8 @@ serviceLocator.register('bot', (servicelocator) => {
     const logger = servicelocator.get('logger');
     const bot = new SlackBot({
         token: config.slack_auth.token,
-        name: 'reportbot',
-        types: 'public_channel,private_channel'
-    });
+        name: 'reportbot'
+      });
 
     bot.on('start', () => {
         logger.info('Report Bot is online...');
