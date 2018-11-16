@@ -55,7 +55,7 @@ serviceLocator.register('bot', (servicelocator) => {
     });
 
     bot.on('error', (err) => logger.error(err));
-
+    
     return bot;
 });
 

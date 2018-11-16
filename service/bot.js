@@ -30,7 +30,7 @@ class BotService{
 
     done(messagePayload){
         // @TODO: logic for 'done' command;
-        const param = {
+        const params = {
             details: messagePayload.details,
             category: messagePayload.command,
             user_id: messagePayload.user,
@@ -38,8 +38,15 @@ class BotService{
             channel: messagePayload.channel
         }
 
-        this.messageService.done();
-        this.mongoDBClientHelper.save(param);
+        this.logger.info('Params to save to DB: ', JSON.stringify(params));
+        this.messageService.done(messagePayload);
+        this.mongoDBClientHelper.save(params)
+        .then((res) => {
+            this.logger.info('Saved response: ', JSON.stringify(res));
+        })
+        .catch((error) => {
+            this.logger.error('Error saving to Mongo: ', JSON.stringify(error));
+        });
     }
 
     block(messagePayload){
