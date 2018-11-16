@@ -1,18 +1,18 @@
 const taskModel = require('../models/task');
 const Utility = require('../lib/util');
+const MongoDBHelper = require('../lib/mongoDBHelper');
 class BotService{
 
     constructor(logger, mongo, messageService){
         this.logger = logger;
-        this.mongo = mongo;
+        this.mongoDBClientHelper = new MongoDBHelper(mongo, taskModel);
         this.messageService = messageService;
     }
 
     start(messagePayload){
-        // console.log(Utility.getWeekNumber(new Date()));
         console.log(messagePayload);
         const param = {
-            user_id: '',
+            user_id: messagePayload.user,
             details: '',
             category: ''
         }
@@ -30,6 +30,16 @@ class BotService{
 
     done(messagePayload){
         // @TODO: logic for 'done' command;
+        const param = {
+            details: messagePayload.details,
+            category: messagePayload.command,
+            user_id: messagePayload.user,
+            team: messagePayload.team,
+            channel: messagePayload.channel
+        }
+
+        this.messageService.done();
+        this.mongoDBClientHelper.save(param);
     }
 
     block(messagePayload){

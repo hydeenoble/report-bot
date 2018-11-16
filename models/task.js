@@ -26,14 +26,18 @@ const taskSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  team: {
+    type: String,
+    required: false
+  },
+  channel: {
+    type: String,
+    required: false
+  },
   week: {
     type: Number,
     required: true,
     default: Utility.getWeekNumber(new Date())
-  },
-  createdAt: {
-    type: Date,
-    default: moment()
   }
 });
 

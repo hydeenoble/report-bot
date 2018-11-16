@@ -1,3 +1,4 @@
+const Utility = require('../lib/util');
 class BotController {
 
     constructor(logger, bot, service){
@@ -9,16 +10,12 @@ class BotController {
     routeMessage(messagePayload){
 
         if(messagePayload.user){
-            let messagePayloadArray = messagePayload.text.split(' ');
-
-            const firstSubText = messagePayloadArray[0].trim();
-            const secondSubText = (messagePayloadArray[1]) ? messagePayloadArray[1].trim() : '';
-
-            let regex = RegExp("^(<@)[A-Z0-9]*>$");
-
-            const command = (regex.test(firstSubText)) ? secondSubText : firstSubText;
             
-            switch(command){
+            const extractedMessage = Utility.extractMessage(messagePayload.text);
+            messagePayload.details = extractedMessage[1];
+            messagePayload.command = extractedMessage[0];
+                        
+            switch(messagePayload.command){
                 case 'help':
                     this.sendHelpMessage(messagePayload);
                 break;
