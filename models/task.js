@@ -20,7 +20,7 @@ const taskSchema = new mongoose.Schema({
     type: String,
     required: false
   },
-  status: {
+  category: {
     type: String,
     required: true
   },
