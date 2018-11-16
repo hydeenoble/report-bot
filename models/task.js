@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const config = require('../config/config');
 const mongooseStringQuery = require('mongoose-string-query');
 const timestamps = require('mongoose-timestamp');
+const moment = require('moment');
+const Utility = require('../lib/util');
 
 const taskSchema = new mongoose.Schema({
   details: {
@@ -26,7 +28,12 @@ const taskSchema = new mongoose.Schema({
   },
   week: {
     type: Number,
-    required: true
+    required: true,
+    default: Utility.getWeekNumber(new Date())
+  },
+  createdAt: {
+    type: Date,
+    default: moment()
   }
 });
 

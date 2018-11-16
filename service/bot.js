@@ -2,17 +2,22 @@ const taskModel = require('../models/task');
 const Utility = require('../lib/util');
 class BotService{
 
-    constructor(logger, mongo){
+    constructor(logger, mongo, messageService){
         this.logger = logger;
         this.mongo = mongo;
+        this.messageService = messageService;
     }
 
     start(messagePayload){
-        // @TODO: logic for 'start' command;
-        console.log(Utility.getWeekNumber(new Date()));
+        // console.log(Utility.getWeekNumber(new Date()));
+        console.log(messagePayload);
         const param = {
-            
+            user_id: '',
+            details: '',
+            category: ''
         }
+
+        this.logger.info(JSON.stringify())
     }
 
     next(messagePayload){
