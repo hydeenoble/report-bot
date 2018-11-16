@@ -13,7 +13,8 @@ mongoose.Promise = bluebird;
 const config = require('../config/config');
 const serviceLocator = require('../lib/serviceLocator');
 const BotController = require('../controller/bot');
-const botService = require('../service/bot');
+const BotService = require('../service/bot');
+const MessageService = require('../service/message');
 
 /**
 * Returns an instance of logger for the App
@@ -39,12 +40,15 @@ serviceLocator.register('logger', () => {
 */
 serviceLocator.register('requestlogger', () => morgan('common'));
 
+/**
+* Return an instance of the Bot
+*/
 serviceLocator.register('bot', (servicelocator) => {
     const logger = servicelocator.get('logger');
     const bot = new SlackBot({
         token: config.slack_auth.token,
         name: 'reportbot'
-    });
+      });
 
     bot.on('start', () => {
         logger.info('Report Bot is online...');
@@ -91,11 +95,19 @@ serviceLocator.register('mongo', (serviceLocator) => {
     return db;
   });
 
+/**
+* Returns an instance of the BotService
+*/
 serviceLocator.register('botService', (servicelocator) => {
     const logger = servicelocator.get('logger');
     const mongo = servicelocator.get('mongo');
-    return new botService(logger, mongo);
+    const messageService = servicelocator.get('messageService');
+    return new BotService(logger, mongo, messageService);
 });
+
+/**
+* Returns an instace of the BotController
+*/
 
 serviceLocator.register('botController', (servicelocator) => {
     const logger = servicelocator.get('logger');
@@ -104,4 +116,12 @@ serviceLocator.register('botController', (servicelocator) => {
     return new BotController(logger, bot, botService);
 });
 
+/**
+* Returns an instace of the MessageService
+*/
+serviceLocator.register('messageService', (servicelocator) => {
+    const logger = servicelocator.get('logger');
+    const bot = servicelocator.get('bot');
+    return new MessageService(bot, logger);
+})
 module.exports = serviceLocator;

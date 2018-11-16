@@ -1,3 +1,5 @@
+const Utility = require('../lib/util');
+const config = require('../config/config');
 class BotController {
 
     constructor(logger, bot, service){
@@ -9,47 +11,57 @@ class BotController {
     routeMessage(messagePayload){
 
         if(messagePayload.user){
-            let messagePayloadArray = messagePayload.text.split(' ');
-
-            const firstSubText = messagePayloadArray[0].trim();
-            const secondSubText = (messagePayloadArray[1]) ? messagePayloadArray[1].trim() : '';
-
-            let regex = RegExp("^(<@)[A-Z0-9]*>$");
-
-            const command = (regex.test(firstSubText)) ? secondSubText : firstSubText;
-            
-            switch(command){
-                case 'help':
-                    console.log('case is help');
-                    this.sendHelpMessage(messagePayload);
-                break;
-                case 'start':
-                    this.service.start(messagePayload);
-                    break;
-                case 'next':
-                    this.service.next(messagePayload);
-                    break;
-                case 'done':
-                    this.service.done(messagePayload);
-                    break;
-                case 'in-progress':
-                    this.service.inProgress(messagePayload);
-                    break;
-                case 'block':
-                    this.service.block(messagePayload);
-                    break;
-                case 'current':
-                    this.service.current(messagePayload);
-                    break;
-                case 'save':
-                    this.service.save(messagePayload);
-                    break;
-                case 'show':
-                    this.service.show(messagePayload);
-                    break;
-                default:
-                this.sendDefaultMessage(messagePayload);
-            }
+            this.bot.getChannelById(messagePayload.channel)
+            .then((isChannel) => {
+                if(isChannel && messagePayload.text.split(' ')[0].trim() != `<@${config.bot_id}>`){
+                    this.logger.info('I am not supposed to response to this');
+                    return;
+                }else{
+                    this.bot.getGroupById(messagePayload.channel)
+                    .then((isPrivateChannel) => {
+                        if(isPrivateChannel && messagePayload.text.split(' ')[0].trim() != `<@${config.bot_id}>`){
+                            this.logger.info('I am not supposed to response to this');
+                            return;
+                        }else{
+                            const extractedMessage = Utility.extractMessage(messagePayload.text);
+                            messagePayload.details = extractedMessage[1];
+                            messagePayload.command = extractedMessage[0];
+                                        
+                            switch(messagePayload.command){
+                                case 'help':
+                                    this.sendHelpMessage(messagePayload);
+                                break;
+                                case 'start':
+                                    this.service.start(messagePayload);
+                                    break;
+                                case 'next':
+                                    this.service.next(messagePayload);
+                                    break;
+                                case 'done':
+                                    this.service.done(messagePayload);
+                                    break;
+                                case 'in-progress':
+                                    this.service.inProgress(messagePayload);
+                                    break;
+                                case 'block':
+                                    this.service.block(messagePayload);
+                                    break;
+                                case 'current':
+                                    this.service.current(messagePayload);
+                                    break;
+                                case 'save':
+                                    this.service.save(messagePayload);
+                                    break;
+                                case 'show':
+                                    this.service.show(messagePayload);
+                                    break;
+                                default:
+                                    this.sendDefaultMessage(messagePayload);
+                            }
+                        }
+                    });
+                }
+            });
         }
     }
 
