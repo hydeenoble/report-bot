@@ -55,7 +55,8 @@ serviceLocator.register('bot', (servicelocator) => {
     });
 
     bot.on('error', (err) => logger.error(err));
-    
+
+    // bot.getGroupId
     return bot;
 });
 

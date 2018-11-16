@@ -1,4 +1,5 @@
 const config = {
+    bot_id: 'UDVFA7PRV',
     slack_auth: {
         token: process.env.TOKEN,
     },

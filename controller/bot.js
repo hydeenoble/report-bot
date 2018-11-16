@@ -1,4 +1,5 @@
 const Utility = require('../lib/util');
+const config = require('../config/config');
 class BotController {
 
     constructor(logger, bot, service){
@@ -9,43 +10,51 @@ class BotController {
 
     routeMessage(messagePayload){
 
+        console.log('messagePayload', messagePayload);
+
         if(messagePayload.user){
-            
-            const extractedMessage = Utility.extractMessage(messagePayload.text);
-            messagePayload.details = extractedMessage[1];
-            messagePayload.command = extractedMessage[0];
-                        
-            switch(messagePayload.command){
-                case 'help':
-                    this.sendHelpMessage(messagePayload);
-                break;
-                case 'start':
-                    this.service.start(messagePayload);
-                    break;
-                case 'next':
-                    this.service.next(messagePayload);
-                    break;
-                case 'done':
-                    this.service.done(messagePayload);
-                    break;
-                case 'in-progress':
-                    this.service.inProgress(messagePayload);
-                    break;
-                case 'block':
-                    this.service.block(messagePayload);
-                    break;
-                case 'current':
-                    this.service.current(messagePayload);
-                    break;
-                case 'save':
-                    this.service.save(messagePayload);
-                    break;
-                case 'show':
-                    this.service.show(messagePayload);
-                    break;
-                default:
-                this.sendDefaultMessage(messagePayload);
-            }
+            this.isChannel(messagePayload.channel)
+            .then((isChannel) => {
+                if(isChannel && messagePayload.text.split(' ')[0].trim() != `<@${config.bot_id}>`){
+                    return;
+                }else{
+                    const extractedMessage = Utility.extractMessage(messagePayload.text);
+                    messagePayload.details = extractedMessage[1];
+                    messagePayload.command = extractedMessage[0];
+                                
+                    switch(messagePayload.command){
+                        case 'help':
+                            this.sendHelpMessage(messagePayload);
+                        break;
+                        case 'start':
+                            this.service.start(messagePayload);
+                            break;
+                        case 'next':
+                            this.service.next(messagePayload);
+                            break;
+                        case 'done':
+                            this.service.done(messagePayload);
+                            break;
+                        case 'in-progress':
+                            this.service.inProgress(messagePayload);
+                            break;
+                        case 'block':
+                            this.service.block(messagePayload);
+                            break;
+                        case 'current':
+                            this.service.current(messagePayload);
+                            break;
+                        case 'save':
+                            this.service.save(messagePayload);
+                            break;
+                        case 'show':
+                            this.service.show(messagePayload);
+                            break;
+                        default:
+                        this.sendDefaultMessage(messagePayload);
+                    }
+                }
+            });
         }
     }
 
@@ -73,6 +82,10 @@ class BotController {
             this.bot.postMessage(messagePayload.channel, 
                 `I'm feeling :confounded:, ${res.real_name}. Try \`help\`?`);
         });
+    }
+
+    isChannel(channel){
+        return this.bot.getChannelById(channel);
     }
 }
 
