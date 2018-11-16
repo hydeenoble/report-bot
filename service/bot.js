@@ -1,5 +1,5 @@
 const taskModel = require('../models/task');
-
+const Utility = require('../lib/util');
 class BotService{
 
     constructor(logger, mongo){
@@ -9,6 +9,10 @@ class BotService{
 
     start(messagePayload){
         // @TODO: logic for 'start' command;
+        console.log(Utility.getWeekNumber(new Date()));
+        const param = {
+            
+        }
     }
 
     next(messagePayload){
