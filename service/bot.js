@@ -38,7 +38,7 @@ class BotService{
             channel: messagePayload.channel
         }
 
-        this.logger.info('Params to save to DB: ', JSON.stringify(params));
+        this.logger.info('Params to save to DB for \'done\' category: ', JSON.stringify(params));
         this.messageService.done(messagePayload);
         this.mongoDBClientHelper.save(params)
         .then((res) => {
