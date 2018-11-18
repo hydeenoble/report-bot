@@ -25,7 +25,7 @@ class BotController {
                         }else{
                             const extractedMessage = Utility.extractMessage(messagePayload.text);
                             messagePayload.details = extractedMessage[1];
-                            messagePayload.command = extractedMessage[0];
+                            messagePayload.command = extractedMessage[0].toLowerCase();
                                         
                             switch(messagePayload.command){
                                 case 'help':
