@@ -72,7 +72,8 @@ class BotService{
             category: messagePayload.command,
             user_id: messagePayload.user,
             team: messagePayload.team,
-            channel: messagePayload.channel
+            channel: messagePayload.channel,
+            // week: 45
         }
 
         this.logger.info('Params to save to DB for \'done\' category: ', JSON.stringify(params));
@@ -111,7 +112,21 @@ class BotService{
     current(messagePayload){
         // @TODO: logic for 'current' command;
         console.log('messagePayload', messagePayload);
-        this.mongoDBClientHelper.find({conditions:{"user_id": messagePayload.user, week: Utility.getWeekNumber(new Date())}})
+        // this.mongoDBClientHelper.find({conditions:{"user_id": messagePayload.user, week: Utility.getWeekNumber(new Date())}})
+        // this.mongoDBClientHelper.find({conditions:{"user_id": messagePayload.user, week: 46}})
+        this.mongoDBClientHelper.aggregate({
+            conditions: [
+                { $match: {
+                    user_id: messagePayload.user,
+                    week: Utility.getWeekNumber(new Date()),
+                    team: messagePayload.team
+                }},
+                { $group: {
+                    _id: "$category",
+                    category: { $push: "$$ROOT" }
+                }}
+            ]
+        })
         .then((data) => {
             this.logger.info('CURRENT DATA => ', JSON.stringify(data));
             this.messageService.current(messagePayload, data);

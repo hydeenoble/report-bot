@@ -27,7 +27,7 @@ class MessageService {
 
     current(messagePayload, data){
         if(data.length > 0){
-
+            // console.log()
         }else{
             
         }

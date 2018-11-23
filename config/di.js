@@ -69,6 +69,7 @@ serviceLocator.register('mongo', (serviceLocator) => {
       `mongodb://${config.mongo.connection.host}:${config.mongo.connection.port}/${config.mongo.connection.db}` :
       `mongodb://${config.mongo.connection.username}:${config.mongo.connection.password}@${config.mongo.connection.host}:${config.mongo.connection.port}/${config.mongo.connection.db}`;
   
+    console.log(connectionString, 'connectionString');
     mongoose.connect(connectionString);
     const db = mongoose.connection;
   
