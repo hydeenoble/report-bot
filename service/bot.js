@@ -124,11 +124,12 @@ class BotService{
                 { $group: {
                     _id: "$category",
                     category: { $push: "$$ROOT" }
-                }}
+                }},
+                { $sort: { _id: 1 } }
             ]
         })
         .then((data) => {
-            this.logger.info('CURRENT DATA => ', JSON.stringify(data));
+            // this.logger.info('CURRENT DATA => ', JSON.stringify(data));
             this.messageService.current(messagePayload, data);
         })
         .catch((error) => this.logger.error(error));
