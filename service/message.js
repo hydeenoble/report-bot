@@ -24,6 +24,14 @@ class MessageService {
         this.logger.info('Sending \'block\' category response message...')
         this.bot.postMessage(messagePayload.channel, 'Place holder messages for `block` category');
     }
+
+    current(messagePayload, data){
+        if(data.length > 0){
+
+        }else{
+            
+        }
+    }
 }
 
 module.exports = MessageService;

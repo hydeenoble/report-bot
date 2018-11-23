@@ -110,6 +110,13 @@ class BotService{
 
     current(messagePayload){
         // @TODO: logic for 'current' command;
+        console.log('messagePayload', messagePayload);
+        this.mongoDBClientHelper.find({conditions:{"user_id": messagePayload.user, week: Utility.getWeekNumber(new Date())}})
+        .then((data) => {
+            this.logger.info('CURRENT DATA => ', JSON.stringify(data));
+            this.messageService.current(messagePayload, data);
+        })
+        .catch((error) => this.logger.error(error));
     }
 
     save(messagePayload){
