@@ -10,14 +10,21 @@ class BotService{
     }
 
     start(messagePayload){
-        // console.log(messagePayload);
-        // const param = {
-        //     user_id: messagePayload.user,
-        //     details: '',
-        //     category: ''
-        // }
-
-        // this.logger.info(JSON.stringify())
+        // @TODO: logic for 'start' command;
+        this.mongoDBClientHelper.find({
+            conditions: {
+                week: Utility.getWeekNumber(new Date()) - 1,
+                category: 'next',
+                user_id: messagePayload.user,
+                team: messagePayload.team
+            }
+        })
+        .then((res) => {
+            this.messageService.start(messagePayload, res);
+        })
+        .catch((error) => {
+            this.logger.error('Error fetching from Mongo: ', JSON.stringify(error));
+        });
     }
 
     next(messagePayload){
@@ -111,9 +118,7 @@ class BotService{
 
     current(messagePayload){
         // @TODO: logic for 'current' command;
-        console.log('messagePayload', messagePayload);
-        // this.mongoDBClientHelper.find({conditions:{"user_id": messagePayload.user, week: Utility.getWeekNumber(new Date())}})
-        // this.mongoDBClientHelper.find({conditions:{"user_id": messagePayload.user, week: 46}})
+        // console.log('messagePayload', messagePayload);
         this.mongoDBClientHelper.aggregate({
             conditions: [
                 { $match: {

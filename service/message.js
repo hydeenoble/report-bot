@@ -4,6 +4,25 @@ class MessageService {
         this.logger = logger;
     }
 
+    start(messagePayload, data){
+        if(data.length > 0){
+            let message = 'Last week you planned to: \n\n';
+
+            for(let i = 0; i < data.length; i++){
+                message += `• ${data[i].details} \n\n`;
+            }
+            this.bot.postMessage(messagePayload.channel,
+                `${message}Let’s start with your top accomplishments for the week. Use \`done\` to enter an accomplishment, one at a time, like this: \`done first amazing thing I did this week\`... Pro-tip: keep it short and sweet.`)
+        }else{
+            this.bot.getUserById(messagePayload.user)
+            .then((res) => {
+                this.bot.postMessage(messagePayload.channel,
+                `${res.real_name}, there weren't any Next items :calendar: in your most recent snippets. Let’s start with your top accomplishments for the week. Use \`done\` to enter an accomplishment, one at a time, like this: \`done first amazing thing I did this week\`... Pro-tip: keep it short and sweet.`)
+            })
+            
+        }
+    }
+
     done(messagePayload){
         this.logger.info('Sending done response message...');
         this.bot.postMessage(messagePayload.channel, 
@@ -26,8 +45,8 @@ class MessageService {
     }
 
     current(messagePayload, data){
-        
         let message = `here is what you have for the week: \n`;
+        
         for(let i = 0; i < data.length; i++){
             if(data[i]._id == 'done'){
                 message += '\n:trophy: *Done*\n\n';
@@ -58,7 +77,11 @@ class MessageService {
             }
             
         }
-        this.bot.postMessage(messagePayload.channel, message);
+
+        this.bot.getUserById(messagePayload.user)
+        .then((res) => {
+            this.bot.postMessage(messagePayload.channel, `${res.real_name}, ${message}`);
+        });
     }
 }
 
