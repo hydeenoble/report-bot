@@ -45,43 +45,51 @@ class MessageService {
     }
 
     current(messagePayload, data){
-        let message = `here is what you have for the week: \n`;
-        
-        for(let i = 0; i < data.length; i++){
-            if(data[i]._id == 'done'){
-                message += '\n:trophy: *Done*\n\n';
-                for(let j = 0; j < data[i].category.length; j++){
-                    message += `${j + 1} - ${data[i].category[j].details} \n`;
-                }
-            }
 
-            if(data[i]._id == 'next'){
-                message += '\n:calendar: *Next*\n\n';
-                for(let j = 0; j < data[i].category.length; j++){
-                    message += `${j + 1} - ${data[i].category[j].details} \n`;
-                }
-            }
-
-            if(data[i]._id == 'in-progress'){
-                message += '\n:second_place_medal: *In Progress*\n\n';
-                for(let j = 0; j < data[i].category.length; j++){
-                    message += `${j + 1} - ${data[i].category[j].details} \n`;
-                }
-            }
-
-            if(data[i]._id == 'block'){
-                message += '\n:rotating_light: *Blocking*\n\n';
-                for(let j = 0; j < data[i].category.length; j++){
-                    message += `${j + 1} - ${data[i].category[j].details} \n`;
-                }
-            }
+        if(data.length > 0){
+            let message = `here is what you have for the week: \n`;
             
-        }
+            for(let i = 0; i < data.length; i++){
+                if(data[i]._id == 'done'){
+                    message += '\n:trophy: *Done*\n\n';
+                    for(let j = 0; j < data[i].category.length; j++){
+                        message += `${j + 1} - ${data[i].category[j].details} \n`;
+                    }
+                }
 
-        this.bot.getUserById(messagePayload.user)
-        .then((res) => {
-            this.bot.postMessage(messagePayload.channel, `${res.real_name}, ${message}`);
-        });
+                if(data[i]._id == 'next'){
+                    message += '\n:calendar: *Next*\n\n';
+                    for(let j = 0; j < data[i].category.length; j++){
+                        message += `${j + 1} - ${data[i].category[j].details} \n`;
+                    }
+                }
+
+                if(data[i]._id == 'in-progress'){
+                    message += '\n:second_place_medal: *In Progress*\n\n';
+                    for(let j = 0; j < data[i].category.length; j++){
+                        message += `${j + 1} - ${data[i].category[j].details} \n`;
+                    }
+                }
+
+                if(data[i]._id == 'block'){
+                    message += '\n:rotating_light: *Blocking*\n\n';
+                    for(let j = 0; j < data[i].category.length; j++){
+                        message += `${j + 1} - ${data[i].category[j].details} \n`;
+                    }
+                }
+                
+            }
+
+            this.bot.getUserById(messagePayload.user)
+            .then((res) => {
+                this.bot.postMessage(messagePayload.channel, `${res.real_name}, ${message}`);
+            });
+        }else{
+            this.bot.getUserById(messagePayload.user)
+            .then((res) => {
+                this.bot.postMessage(messagePayload.channel, `Opps!, ${res.real_name} does not have any report yet.`);
+            });
+        }
     }
 }
 
