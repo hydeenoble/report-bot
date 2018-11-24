@@ -10,14 +10,21 @@ class BotService{
     }
 
     start(messagePayload){
-        // console.log(messagePayload);
-        // const param = {
-        //     user_id: messagePayload.user,
-        //     details: '',
-        //     category: ''
-        // }
-
-        // this.logger.info(JSON.stringify())
+        // @TODO: logic for 'start' command;
+        this.mongoDBClientHelper.find({
+            conditions: {
+                week: Utility.getWeekNumber(new Date()) - 1,
+                category: 'next',
+                user_id: messagePayload.user,
+                team: messagePayload.team
+            }
+        })
+        .then((res) => {
+            this.messageService.start(messagePayload, res);
+        })
+        .catch((error) => {
+            this.logger.error('Error fetching from Mongo: ', JSON.stringify(error));
+        });
     }
 
     next(messagePayload){
@@ -72,7 +79,8 @@ class BotService{
             category: messagePayload.command,
             user_id: messagePayload.user,
             team: messagePayload.team,
-            channel: messagePayload.channel
+            channel: messagePayload.channel,
+            // week: 45
         }
 
         this.logger.info('Params to save to DB for \'done\' category: ', JSON.stringify(params));
@@ -110,6 +118,26 @@ class BotService{
 
     current(messagePayload){
         // @TODO: logic for 'current' command;
+        // console.log('messagePayload', messagePayload);
+        this.mongoDBClientHelper.aggregate({
+            conditions: [
+                { $match: {
+                    user_id: messagePayload.user,
+                    week: Utility.getWeekNumber(new Date()),
+                    team: messagePayload.team
+                }},
+                { $group: {
+                    _id: "$category",
+                    category: { $push: "$$ROOT" }
+                }},
+                { $sort: { _id: 1 } }
+            ]
+        })
+        .then((data) => {
+            // this.logger.info('CURRENT DATA => ', JSON.stringify(data));
+            this.messageService.current(messagePayload, data);
+        })
+        .catch((error) => this.logger.error(error));
     }
 
     save(messagePayload){
