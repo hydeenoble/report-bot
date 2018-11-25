@@ -91,6 +91,33 @@ class MessageService {
             });
         }
     }
+
+    show(messagePayload, data){
+        if(data.length > 0){
+            let message = `here is what you have for the week: \n`;
+            
+            for(let i = 0; i < data.length; i++){
+            }
+
+        }else{
+            this.bot.getUserById(messagePayload.user)
+            .then((res) => {
+                this.bot.postMessage(messagePayload.channel, `Opps!, ${res.real_name} does not have any report yet.`);
+            });
+        }
+        this.bot.filesUpload(messagePayload.channel,{
+            filename: 'texting report bot',
+            filetype: 'post',
+            title: '',
+            content: ``
+        })
+        .then((res) => {
+            console.log(res);
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+    }
 }
 
 module.exports = MessageService;

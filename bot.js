@@ -9,5 +9,10 @@ bot.on('message', (messagePayload) => {
     if(messagePayload.type !== 'message'){
         return;
     }
+
+    if(messagePayload.type === 'message' && messagePayload.text.length == 0){
+        return;
+    }
+    
     botController.routeMessage(messagePayload)
 });

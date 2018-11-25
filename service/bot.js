@@ -153,6 +153,30 @@ class BotService{
             messagePayload.user = Utility.extractUserId(reportOwner);
             if(numberOfWeeks){
                 console.log('numberOfWeeks', numberOfWeeks);
+
+
+                this.mongoDBClientHelper.aggregate({
+                    conditions: [
+                        { $match: {
+                            user_id: messagePayload.user,
+                            team: messagePayload.team,
+                            $or: [{week: 47}, {week: 45}]
+                        }},
+                        { $group: {
+                            _id: {
+                                week: "$week",
+                            },
+                            details: { $push: "$$ROOT" }
+                        }},
+                        { $sort: { _id: 1 } }
+                    ]
+                })
+                .then((data) => {
+                    // this.messageService.current(messagePayload, data);
+                    console.log(JSON.stringify(data));
+                })
+                .catch((error) => this.logger.error(error));
+
             }else{
                 this.current(messagePayload);
             }

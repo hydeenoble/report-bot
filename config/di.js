@@ -55,11 +55,7 @@ serviceLocator.register('bot', (servicelocator) => {
     });
 
     bot.on('error', (err) => logger.error(err));
-
-    bot.filesUpload('DDUA88VBN',{})
-    .then((res) => {
-      console.log(res);
-    })
+    
     return bot;
 });
 
