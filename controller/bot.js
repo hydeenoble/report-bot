@@ -9,7 +9,7 @@ class BotController {
     }
 
     routeMessage(messagePayload){
-
+        
         if(messagePayload.user){
             this.bot.getChannelById(messagePayload.channel)
             .then((isChannel) => {

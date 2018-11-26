@@ -118,7 +118,6 @@ class BotService{
 
     current(messagePayload){
         // @TODO: logic for 'current' command;
-        // console.log('messagePayload', messagePayload);
         this.mongoDBClientHelper.aggregate({
             conditions: [
                 { $match: {
@@ -134,7 +133,6 @@ class BotService{
             ]
         })
         .then((data) => {
-            // this.logger.info('CURRENT DATA => ', JSON.stringify(data));
             this.messageService.current(messagePayload, data);
         })
         .catch((error) => this.logger.error(error));
@@ -146,6 +144,45 @@ class BotService{
 
     show(messagePayload){
         // @TODO: logic for 'show' command;
+        messagePayload.oldUser = messagePayload.user;
+        let detailsArray = messagePayload.details.split(' ');
+        let reportOwner = detailsArray[0];
+        let numberOfWeeks = detailsArray[1];
+
+        if(Utility.isUser(reportOwner)){
+            messagePayload.user = Utility.extractUserId(reportOwner);
+            if(numberOfWeeks){
+                console.log('numberOfWeeks', numberOfWeeks);
+
+
+                this.mongoDBClientHelper.aggregate({
+                    conditions: [
+                        { $match: {
+                            user_id: messagePayload.user,
+                            team: messagePayload.team,
+                            $or: [{week: 47}, {week: 45}]
+                        }},
+                        { $group: {
+                            _id: {
+                                week: "$week",
+                            },
+                            details: { $push: "$$ROOT" }
+                        }},
+                        { $sort: { _id: 1 } }
+                    ]
+                })
+                .then((data) => {
+                    // this.messageService.current(messagePayload, data);
+                    console.log(JSON.stringify(data));
+                })
+                .catch((error) => this.logger.error(error));
+
+            }else{
+                this.current(messagePayload);
+            }
+        }else{
+
+        }
     }
 }
 
