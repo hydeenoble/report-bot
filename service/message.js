@@ -105,18 +105,18 @@ class MessageService {
                 this.bot.postMessage(messagePayload.channel, `Opps!, ${res.real_name} does not have any report yet.`);
             });
         }
-        this.bot.filesUpload(messagePayload.channel,{
-            filename: 'texting report bot',
-            filetype: 'post',
-            title: '',
-            content: ``
-        })
-        .then((res) => {
-            console.log(res);
-        })
-        .catch((error) => {
-            console.log(error);
-        })
+        // this.bot.filesUpload(messagePayload.channel,{
+        //     filename: 'texting report bot',
+        //     filetype: 'post',
+        //     title: '',
+        //     content: ``
+        // })
+        // .then((res) => {
+        //     console.log(res);
+        // })
+        // .catch((error) => {
+        //     console.log(error);
+        // })
     }
 }
 

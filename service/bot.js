@@ -13,7 +13,7 @@ class BotService{
         // @TODO: logic for 'start' command;
         this.mongoDBClientHelper.find({
             conditions: {
-                week: Utility.getWeekNumber(new Date()) - 1,
+                week: Utility.getCurrentWeek() - 1,
                 category: 'next',
                 user_id: messagePayload.user,
                 team: messagePayload.team
@@ -122,7 +122,7 @@ class BotService{
             conditions: [
                 { $match: {
                     user_id: messagePayload.user,
-                    week: Utility.getWeekNumber(new Date()),
+                    week: Utility.getCurrentWeek(),
                     team: messagePayload.team
                 }},
                 { $group: {
@@ -151,28 +151,26 @@ class BotService{
 
         if(Utility.isUser(reportOwner)){
             messagePayload.user = Utility.extractUserId(reportOwner);
-            if(numberOfWeeks){
-                console.log('numberOfWeeks', numberOfWeeks);
+            messagePayload.numberOfWeeks = numberOfWeeks;
+            messagePayload.weeks = Utility.getWeeks(messagePayload.numberOfWeeks);
 
-
+            if(messagePayload.numberOfWeeks){
+                
                 this.mongoDBClientHelper.aggregate({
                     conditions: [
                         { $match: {
                             user_id: messagePayload.user,
                             team: messagePayload.team,
-                            $or: [{week: 47}, {week: 45}]
+                            $or: messagePayload.weeks
                         }},
                         { $group: {
-                            _id: {
-                                week: "$week",
-                            },
-                            details: { $push: "$$ROOT" }
+                            _id: "$week",
+                            data: { $push: "$$ROOT" }
                         }},
                         { $sort: { _id: 1 } }
                     ]
                 })
                 .then((data) => {
-                    // this.messageService.current(messagePayload, data);
                     console.log(JSON.stringify(data));
                 })
                 .catch((error) => this.logger.error(error));
