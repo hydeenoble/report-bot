@@ -94,10 +94,11 @@ class MessageService {
 
     show(messagePayload, data){
         if(data.length > 0){
-            let message = `here is what you have for the week: \n`;
-            
-            for(let i = 0; i < data.length; i++){
-            }
+            // let message = `here is what you have for the week: \n`;
+
+            this._transformShowUserData(messagePayload, data)
+            // .then()
+            // .catch();
 
         }else{
             this.bot.getUserById(messagePayload.user)
@@ -117,6 +118,22 @@ class MessageService {
         // .catch((error) => {
         //     console.log(error);
         // })
+    }
+
+    _transformShowUserData(messagePayload, data){
+        return new Promise((resolve) => {
+            let message = "";
+
+            for(let i = 0; i < messagePayload.weeks.length; i++){
+                for(let j = 0; j < data.length; j++){
+                    if(data[j]._id == messagePayload.weeks[i].week){
+                        
+                    }
+                }
+            }
+
+            return resolve(message)
+        });
     }
 }
 

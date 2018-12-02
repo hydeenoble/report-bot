@@ -171,7 +171,8 @@ class BotService{
                     ]
                 })
                 .then((data) => {
-                    console.log(JSON.stringify(data));
+                    this.messageService.show(messagePayload, data);
+                    // console.log(JSON.stringify(data));
                 })
                 .catch((error) => this.logger.error(error));
 
