@@ -197,7 +197,7 @@ class BotService{
         .then((data) => {
             this.mongoDBClientHelper.delete({
                 conditions: {
-                    _id: data[position]._id
+                    _id: data[position - 1]._id
                 }
             })
             .then((res) => {
