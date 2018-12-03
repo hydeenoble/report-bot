@@ -41,7 +41,7 @@ const taskSchema = new mongoose.Schema({
   week: {
     type: Number,
     required: true,
-    default: Utility.getWeekNumber(new Date())
+    default: Utility.getCurrentWeek()
   }
 });
 

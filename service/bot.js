@@ -8,13 +8,14 @@ class BotService{
         this.mongoDBClientHelper = new MongoDBHelper(mongo, taskModel);
         this.bot = bot;
         this.messageService = messageService;
+        this.bot = bot;
     }
 
     start(messagePayload){
         // @TODO: logic for 'start' command;
         this.mongoDBClientHelper.find({
             conditions: {
-                week: Utility.getWeekNumber(new Date()) - 1,
+                week: Utility.getCurrentWeek() - 1,
                 category: 'next',
                 user_id: messagePayload.user,
                 team: messagePayload.team
@@ -124,19 +125,12 @@ class BotService{
 
     current(messagePayload){
         // @TODO: logic for 'current' command;
-        this.mongoDBClientHelper.aggregate({
-            conditions: [
-                { $match: {
-                    user_id: messagePayload.user,
-                    week: Utility.getWeekNumber(new Date()),
-                    team: messagePayload.team
-                }},
-                { $group: {
-                    _id: "$category",
-                    category: { $push: "$$ROOT" }
-                }},
-                { $sort: { _id: 1 } }
-            ]
+        this.mongoDBClientHelper.find({
+            conditions: {
+                user_id: messagePayload.user,
+                week: Utility.getCurrentWeek(),
+                team: messagePayload.team
+            }
         })
         .then((data) => {
             this.messageService.current(messagePayload, data);
@@ -150,39 +144,40 @@ class BotService{
 
     show(messagePayload){
         // @TODO: logic for 'show' command;
-        messagePayload.oldUser = messagePayload.user;
+        messagePayload.current_user = messagePayload.user;
         let detailsArray = messagePayload.details.split(' ');
         let reportOwner = detailsArray[0];
         let numberOfWeeks = detailsArray[1];
 
         if(Utility.isUser(reportOwner)){
             messagePayload.user = Utility.extractUserId(reportOwner);
-            if(numberOfWeeks){
-                console.log('numberOfWeeks', numberOfWeeks);
+            messagePayload.numberOfWeeks = numberOfWeeks;
+            messagePayload.weeks = Utility.getWeeks(messagePayload.numberOfWeeks);
 
-
-                this.mongoDBClientHelper.aggregate({
-                    conditions: [
-                        { $match: {
-                            user_id: messagePayload.user,
-                            team: messagePayload.team,
-                            $or: [{week: 47}, {week: 45}]
-                        }},
-                        { $group: {
-                            _id: {
-                                week: "$week",
-                            },
-                            details: { $push: "$$ROOT" }
-                        }},
-                        { $sort: { _id: 1 } }
-                    ]
-                })
-                .then((data) => {
-                    // this.messageService.current(messagePayload, data);
-                    console.log(JSON.stringify(data));
+            if(messagePayload.numberOfWeeks){
+                
+                this.bot.getUserById(messagePayload.user)
+                .then((res) => {
+                    messagePayload.real_name = res.real_name;
+                    this.mongoDBClientHelper.aggregate({
+                        conditions: [
+                            { $match: {
+                                user_id: messagePayload.user,
+                                team: messagePayload.team,
+                                $or: messagePayload.weeks
+                            }},
+                            { $group: {
+                                _id: "$week",
+                                data: { $push: "$$ROOT" }
+                            }},
+                            { $sort: { _id: 1 } }
+                        ]
+                    })
+                    .then((data) => {
+                        this.messageService.show(messagePayload, data); 
+                    })
                 })
                 .catch((error) => this.logger.error(error));
-
             }else{
                 this.current(messagePayload);
             }
@@ -229,6 +224,34 @@ class BotService{
                     .catch((error) => this.logger.error(error));
                 });
         }
+    }
+
+    delete(messagePayload){
+        let detailsArray = messagePayload.details.split(' ');
+        let command = detailsArray[0];
+        let position = detailsArray[1];
+        console.log(position, command);
+
+        this.mongoDBClientHelper.find({
+            conditions: {
+                user_id: messagePayload.user,
+                week: Utility.getCurrentWeek(),
+                team: messagePayload.team,
+                category: command
+            }
+        })
+        .then((data) => {
+            this.mongoDBClientHelper.delete({
+                conditions: {
+                    _id: data[position - 1]._id
+                }
+            })
+            .then((res) => {
+                console.log(JSON.stringify(res));
+                this.messageService.delete(messagePayload);
+            })
+        })
+        .catch((error) => this.logger.error(error));
     }
 }
 
