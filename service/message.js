@@ -3,7 +3,7 @@ class MessageService {
         this.bot = bot;
         this.logger = logger;
     }
-
+    
     start(messagePayload, data){
         if(data.length > 0){
             let message = 'Last week you planned to: \n\n';
@@ -45,7 +45,7 @@ class MessageService {
     }
 
     current(messagePayload, data){
-
+        console.log('data structure', JSON.stringify(data));
         if(data.length > 0){
             let message = `here is what you have for the week: \n`;
             
@@ -112,11 +112,55 @@ class MessageService {
             content: ``
         })
         .then((res) => {
-            console.log(res);
+            this.logger.info('Report Uploaded');
         })
         .catch((error) => {
-            console.log(error);
+            console.log('error ',error);
         })
+    }
+
+    show_all(messagePayload, data) {
+        let message = `Here is your Team's report: \n`;
+        if (data.length > 0) {
+            data.forEach(element => {
+                const details = element.details;
+                message += `\n*${details[0].user_name}'s Report*:\n`;
+                details.forEach(record => {
+                    if(record.category == 'done'){
+                        message += '\n:trophy: *Done*\n\n';
+                        message += `${record.details} \n`;
+                    }
+                    if(record.category == 'next'){
+                        message += '\n:calendar: *Next*\n\n';
+                        message += `${record.details}\n`;
+                    }
+                    if(record.category == 'in-progress'){
+                        message += '\n:second_place_medal: *In Progress*\n\n';
+                        message += `${record.details}\n`;
+                    }
+                    if(record.category == 'block'){
+                        message += '\n:rotating_light: *Blocking*\n\n';
+                        message += `${record.details}\n`;
+                    }
+                });
+                
+            });
+            // this.bot.postMessage(messagePayload.channel, message);
+            this.bot.filesUpload(messagePayload.channel,{
+                filename: 'texting report bot',
+                filetype: 'post',
+                title: 'Team Report',
+                content: message
+            })
+            .then((res) => {
+                this.logger.info('Team Report Uploaded');
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+        } else{
+            this.bot.postMessage(messagePayload.channel, `Opps!!, your team does not have any report yet. Are they working at all?`);
+        }
     }
 }
 
