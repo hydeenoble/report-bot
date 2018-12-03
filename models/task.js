@@ -18,6 +18,10 @@ const taskSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  user_name: {
+    type: String,
+    required: true
+  },
   project_name: {
     type: String,
     required: false
