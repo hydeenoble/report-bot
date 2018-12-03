@@ -221,6 +221,13 @@ class MessageService {
             return resolve(message)
         });
     }
+
+    delete(messagePayload){
+        this.bot.getUserById(messagePayload.user)
+        .then((res) => {
+            this.bot.postMessage(messagePayload.channel, `Alright ${res.real_name.split(' ')[1]}, I have removed that report.`);
+        });
+    }
 }
 
 module.exports = MessageService;

@@ -179,6 +179,34 @@ class BotService{
 
         }
     }
+
+    delete(messagePayload){
+        let detailsArray = messagePayload.details.split(' ');
+        let command = detailsArray[0];
+        let position = detailsArray[1];
+        console.log(position, command);
+
+        this.mongoDBClientHelper.find({
+            conditions: {
+                user_id: messagePayload.user,
+                week: Utility.getCurrentWeek(),
+                team: messagePayload.team,
+                category: command
+            }
+        })
+        .then((data) => {
+            this.mongoDBClientHelper.delete({
+                conditions: {
+                    _id: data[position]._id
+                }
+            })
+            .then((res) => {
+                console.log(JSON.stringify(res));
+                this.messageService.delete(messagePayload);
+            })
+        })
+        .catch((error) => this.logger.error(error));
+    }
 }
 
 module.exports = BotService;
