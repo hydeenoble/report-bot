@@ -125,8 +125,6 @@ class MessageService {
 
     show(messagePayload, data){
         if(data.length > 0) {
-            // let message = `here is what you have for the week: \n`;
-
             this._transformShowUserData(messagePayload, data)
             .then((res) => {
                 this.bot.filesUpload(messagePayload.channel,{
