@@ -3,10 +3,11 @@ const Utility = require('../lib/util');
 const MongoDBHelper = require('../lib/mongoDBHelper');
 class BotService{
 
-    constructor(logger, mongo, messageService){
+    constructor(logger, mongo, messageService, bot){
         this.logger = logger;
         this.mongoDBClientHelper = new MongoDBHelper(mongo, taskModel);
         this.messageService = messageService;
+        this.bot = bot;
     }
 
     start(messagePayload){
@@ -144,7 +145,7 @@ class BotService{
 
     show(messagePayload){
         // @TODO: logic for 'show' command;
-        messagePayload.oldUser = messagePayload.user;
+        messagePayload.current_user = messagePayload.user;
         let detailsArray = messagePayload.details.split(' ');
         let reportOwner = detailsArray[0];
         let numberOfWeeks = detailsArray[1];
@@ -156,25 +157,28 @@ class BotService{
 
             if(messagePayload.numberOfWeeks){
                 
-                this.mongoDBClientHelper.aggregate({
-                    conditions: [
-                        { $match: {
-                            user_id: messagePayload.user,
-                            team: messagePayload.team,
-                            $or: messagePayload.weeks
-                        }},
-                        { $group: {
-                            _id: "$week",
-                            data: { $push: "$$ROOT" }
-                        }},
-                        { $sort: { _id: 1 } }
-                    ]
-                })
-                .then((data) => {
-                    console.log(JSON.stringify(data));
+                this.bot.getUserById(messagePayload.user)
+                .then((res) => {
+                    messagePayload.real_name = res.real_name;
+                    this.mongoDBClientHelper.aggregate({
+                        conditions: [
+                            { $match: {
+                                user_id: messagePayload.user,
+                                team: messagePayload.team,
+                                $or: messagePayload.weeks
+                            }},
+                            { $group: {
+                                _id: "$week",
+                                data: { $push: "$$ROOT" }
+                            }},
+                            { $sort: { _id: 1 } }
+                        ]
+                    })
+                    .then((data) => {
+                        this.messageService.show(messagePayload, data); 
+                    })
                 })
                 .catch((error) => this.logger.error(error));
-
             }else{
                 this.current(messagePayload);
             }

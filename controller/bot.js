@@ -70,15 +70,15 @@ class BotController {
         .then((res) => {
             this.bot.postMessage(messagePayload.channel, 
                 `${res.real_name}, here are some tips:\n
-    • \`start\` - starts a snippet reporting session\n
-    • \`done\` - adds an accomplishment for the current week (ending Friday)\n
-    • \`next\` - adds an objective for next week (starting Monday)\n
-    • \`in-progress\` - adds on work in process for the current week\n
-    • \`block\` - adds a note about something standing in your way\n
-    • \`current\` - shows your report for the  current week\n
-    • \`save\` - tell @reportbot your report for the week is complete\n
-    • \`show @username #\` - displays most recent snippets for @username, optional # of weeks\n
-    • \`show #channelname #\` - displays the most recent published snippets for everyone in a channel, optional # of weeks\n
+    * \`start\` - starts a snippet reporting session\n
+    * \`done\` - adds an accomplishment for the current week (ending Friday)\n
+    * \`next\` - adds an objective for next week (starting Monday)\n
+    * \`in-progress\` - adds on work in process for the current week\n
+    * \`block\` - adds a note about something standing in your way\n
+    * \`current\` - shows your report for the  current week\n
+    * \`save\` - tell @reportbot your report for the week is complete\n
+    * \`show @username #\` - displays most recent snippets for @username, optional # of weeks\n
+    * \`show #channelname #\` - displays the most recent published snippets for everyone in a channel, optional # of weeks\n
                 `);
         });
     }

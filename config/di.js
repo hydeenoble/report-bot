@@ -102,7 +102,8 @@ serviceLocator.register('botService', (servicelocator) => {
     const logger = servicelocator.get('logger');
     const mongo = servicelocator.get('mongo');
     const messageService = servicelocator.get('messageService');
-    return new BotService(logger, mongo, messageService);
+    const bot = servicelocator.get('bot');
+    return new BotService(logger, mongo, messageService, bot);
 });
 
 /**
