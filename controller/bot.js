@@ -55,6 +55,9 @@ class BotController {
                                 case 'show':
                                     this.service.show(messagePayload);
                                     break;
+                                case 'delete':
+                                    this.service.delete(messagePayload);
+                                    break;
                                 default:
                                     this.sendDefaultMessage(messagePayload);
                             }

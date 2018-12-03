@@ -119,19 +119,12 @@ class BotService{
 
     current(messagePayload){
         // @TODO: logic for 'current' command;
-        this.mongoDBClientHelper.aggregate({
-            conditions: [
-                { $match: {
-                    user_id: messagePayload.user,
-                    week: Utility.getCurrentWeek(),
-                    team: messagePayload.team
-                }},
-                { $group: {
-                    _id: "$category",
-                    category: { $push: "$$ROOT" }
-                }},
-                { $sort: { _id: 1 } }
-            ]
+        this.mongoDBClientHelper.find({
+            conditions: {
+                user_id: messagePayload.user,
+                week: Utility.getCurrentWeek(),
+                team: messagePayload.team
+            }
         })
         .then((data) => {
             this.messageService.current(messagePayload, data);
@@ -185,6 +178,34 @@ class BotService{
         }else{
 
         }
+    }
+
+    delete(messagePayload){
+        let detailsArray = messagePayload.details.split(' ');
+        let command = detailsArray[0];
+        let position = detailsArray[1];
+        console.log(position, command);
+
+        this.mongoDBClientHelper.find({
+            conditions: {
+                user_id: messagePayload.user,
+                week: Utility.getCurrentWeek(),
+                team: messagePayload.team,
+                category: command
+            }
+        })
+        .then((data) => {
+            this.mongoDBClientHelper.delete({
+                conditions: {
+                    _id: data[position - 1]._id
+                }
+            })
+            .then((res) => {
+                console.log(JSON.stringify(res));
+                this.messageService.delete(messagePayload);
+            })
+        })
+        .catch((error) => this.logger.error(error));
     }
 }
 
