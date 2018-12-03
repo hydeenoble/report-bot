@@ -50,36 +50,65 @@ class MessageService {
 
         if(data.length > 0){
             let message = `here is what you have for the week: \n`;
+
+            let done = '';
+            let done_count = 0;
+            let next = '';
+            let next_count = 0;
+            let inProgress = '';
+            let inProgress_count = 0;
+            let block = '';
+            let block_count = 0;
             
             for(let i = 0; i < data.length; i++){
-                if(data[i]._id == 'done'){
-                    message += '\n:trophy: *Done*\n\n';
-                    for(let j = 0; j < data[i].category.length; j++){
-                        message += `${j + 1} - ${data[i].category[j].details} \n`;
-                    }
+                if(data[i].category == 'done'){
+                    done += `${++done_count} - ${data[i].details} \n`
                 }
 
-                if(data[i]._id == 'next'){
-                    message += '\n:calendar: *Next*\n\n';
-                    for(let j = 0; j < data[i].category.length; j++){
-                        message += `${j + 1} - ${data[i].category[j].details} \n`;
-                    }
+                if(data[i].category == 'next'){
+                    next += `${++next_count} - ${data[i].details} \n`
                 }
 
-                if(data[i]._id == 'in-progress'){
-                    message += '\n:second_place_medal: *In Progress*\n\n';
-                    for(let j = 0; j < data[i].category.length; j++){
-                        message += `${j + 1} - ${data[i].category[j].details} \n`;
-                    }
+                if(data[i].category == 'in-progress'){
+                    inProgress += `${++inProgress_count} - ${data[i].details} \n`
                 }
 
-                if(data[i]._id == 'block'){
-                    message += '\n:rotating_light: *Blocking*\n\n';
-                    for(let j = 0; j < data[i].category.length; j++){
-                        message += `${j + 1} - ${data[i].category[j].details} \n`;
-                    }
+                if(data[i].category == 'block'){
+                    block += `${++block_count} - ${data[i].details} \n`
                 }
                 
+            }
+
+            if(done.length > 0){
+                message += '\n:trophy: *Done*\n\n';
+                message += done;
+            }else{
+                message += '\n:trophy: *Done*\n\n';
+                message += 'X - No Items \n'
+            }
+
+            if(next.length > 0){
+                message += '\n:calendar: *Next*\n\n';
+                message += next;
+            }else{
+                message += '\n:calendar: *Next*\n\n';
+                message += 'X - No Items \n'
+            }
+
+            if(block.length > 0){
+                message += '\n:rotating_light: *Blocking*\n\n';
+                message += block;
+            }else{
+                message += '\n:rotating_light: *Blocking*\n\n';
+                message += 'X - No Items \n'
+            }
+
+            if(inProgress.length > 0){
+                message += '\n:second_place_medal: *In Progress*\n\n';
+                message += inProgress;
+            }else{
+                message += '\n:second_place_medal: *In Progress*\n\n';
+                message += 'X - No Items \n'
             }
 
             this.bot.getUserById(messagePayload.user)
