@@ -1,3 +1,5 @@
+const Utility = require('../lib/util');
+
 class MessageService {
     constructor(bot, logger) {
         this.bot = bot;
@@ -93,11 +95,24 @@ class MessageService {
     }
 
     show(messagePayload, data){
-        if(data.length > 0){
+        if(data.length > 0) {
             // let message = `here is what you have for the week: \n`;
 
             this._transformShowUserData(messagePayload, data)
-            // .then()
+            .then((res) => {
+                this.bot.filesUpload(messagePayload.channel,{
+                    filename: 'texting report bot',
+                    filetype: 'post',
+                    title: `${messagePayload.real_name}'s report for ${messagePayload.numberOfWeeks} weeks`,
+                    content: res
+                })
+                .then((res) => {
+                    console.log(res);
+                })
+                .catch((error) => {
+                    console.log(error);
+                })
+            })
             // .catch();
 
         }else{
@@ -106,18 +121,6 @@ class MessageService {
                 this.bot.postMessage(messagePayload.channel, `Opps!, ${res.real_name} does not have any report yet.`);
             });
         }
-        // this.bot.filesUpload(messagePayload.channel,{
-        //     filename: 'texting report bot',
-        //     filetype: 'post',
-        //     title: '',
-        //     content: ``
-        // })
-        // .then((res) => {
-        //     console.log(res);
-        // })
-        // .catch((error) => {
-        //     console.log(error);
-        // })
     }
 
     _transformShowUserData(messagePayload, data){
@@ -125,13 +128,69 @@ class MessageService {
             let message = "";
 
             for(let i = 0; i < messagePayload.weeks.length; i++){
+
+                
+
                 for(let j = 0; j < data.length; j++){
+
                     if(data[j]._id == messagePayload.weeks[i].week){
+                        let payload = data[j].data;
                         
+                        message += `## Report for ${messagePayload.real_name}, week of ${Utility.getDateRangeOfWeek(messagePayload.weeks[i].week).from}, \n\n\n\n\n`;
+                        if(payload.length > 0){
+                            
+                            let done = '';
+                            let block = '';
+                            let inProgress = '';
+                            let next = '';
+
+                            for(let k = 0; k < payload.length; k++){
+
+                                if(payload[k].category == 'done'){
+                                    done += '* ' + `${payload[k].details}\n\n`
+                                }
+
+                                if(payload[k].category == 'next'){
+                                    next += '* ' + `${payload[k].details}\n\n`
+                                }
+
+                                if(payload[k].category == 'block'){
+                                    block += '* ' + `${payload[k].details}\n\n`
+                                }
+
+                                if(payload[k].category == 'in-progress'){
+                                    inProgress += '* ' + `${payload[k].details}\n\n`
+                                }
+                                
+                            }
+
+                            if(done.length > 0){
+                                message += '\n\n### :trophy: *DONE*\n\n';
+                                message += done;
+                            }
+
+                            if(next.length > 0){
+                                message += '\n\n### :calendar: *NEXT*\n\n';
+                                message += next;
+                            }
+
+                            if(block.length > 0){
+                                message += '\n\n### :rotating_light: BLOCKING\n\n';
+                                message += block;
+                            }
+
+                            if(inProgress.length > 0){
+                                message += '\n\n### :second_place_medal: IN PROGRESS\n\n';
+                                message += inProgress;
+                            }
+                        }
+
+                        message += '\n';
+                        message += '___________________________________________________';
+                        message += '\n';
                     }
                 }
             }
-
             return resolve(message)
         });
     }
