@@ -11,7 +11,7 @@ class MessageService {
             let message = 'Last week you planned to: \n\n';
 
             for(let i = 0; i < data.length; i++){
-                message += `• ${data[i].details} \n\n`;
+                message += `* ${data[i].details} \n\n`;
             }
             this.bot.postMessage(messagePayload.channel,
                 `${message}Let’s start with your top accomplishments for the week. Use \`done\` to enter an accomplishment, one at a time, like this: \`done first amazing thing I did this week\`... Pro-tip: keep it short and sweet.`)
